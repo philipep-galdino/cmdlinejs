@@ -21,13 +21,13 @@ console.log(
 //}
 
 // runs the methods for the github authentication
+ 
+// const run = async () => {
+//    let token = github.getStoredGithubToken();
+//    if (!token) {
+//        token = await github.getPersonalAccessToken();
+//    }
+//    console.log(token);
+//}
 
-const run = async () => {
-    let token = github.getStoredGithubToken();
-    if (!token) {
-        token = await github.getPersonalAccessToken();
-    }
-    console.log(token);
-}
-
-run();
+//run();
