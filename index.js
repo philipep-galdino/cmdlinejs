@@ -4,6 +4,7 @@ const figlet = require('figlet');
 
 const files = require('./lib/files');
 const github = require('./lib/github');
+const repo = require('./lib/repo');
 
 clear();
 
@@ -13,21 +14,43 @@ console.log(
     )
 );
 
-// checks if the directory is a git repository 
+const getGithubToken = async () => {
+    let token = github.getStoredGithubToken();
+    if (token) {
+        return token
+    }
 
-//if (files.directoryExists('.git')) {
-//    console.log(chalk.red('Already a git repository!'));
-//    process.exit();
-//}
+    // if the token was not found, uses credentials to access github
+    token = await github.getPersonalAccessToken();
 
-// runs the methods for the github authentication
+    return token;
+};
+
 
 const run = async () => {
-    let token = github.getStoredGithubToken();
-    if (!token) {
-        token = await github.getPersonalAccessToken();
+    try {
+        const token = await getGithubToken();
+        github.githubAuth(token);
+
+        const url = await repo.createRemoteRepo();
+        await repo.createGitignore();
+        await repo.setupRepo(url);
+
+        console.log(chalk.green('Done!'));
+    } catch (err) {
+        if (err) {
+            switch (err.status) {
+                case 401:
+                    console.log(chalk.red('Could not log you in. Check your credentials/token'))
+                    break;
+                case 422:
+                    console.log(chalk.red('There is already a repo or token with the same name!'))
+                    break;
+                default:
+                    console.log(chalk.red(err));       
+            }
+        }
     }
-    console.log(token);
-}
+};
 
 run();
