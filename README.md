@@ -1,4 +1,4 @@
-# cmdlinejs
+# SuperInit
 A Javascript Command Line Interface for a better init of a Git Repository. WIP
 
 
